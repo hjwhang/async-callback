@@ -2,7 +2,23 @@ plugins {
     id 'java'
 }
 
-apply from: 'publish-module.gradle'
+ext {
+    PUBLISH_GROUP_ID = 'io.github.hjwhang'
+    PUBLISH_VERSION = '0.0.1-SNAPSHOT'
+    PUBLISH_ARTIFACT_ID = 'async-callback'
+    PUBLISH_DESCRIPTION = 'SpringBoot Async Callback Library'
+    PUBLISH_URL = 'https://github.com/hjwhang/async-callback'
+    PUBLISH_LICENSE_NAME = 'Apache License 2.0'
+    PUBLISH_LICENSE_URL = 'https://www.apache.org/licenses/LICENSE-2.0'
+    PUBLISH_DEVELOPER_ID = 'hjwhang'
+    PUBLISH_DEVELOPER_NAME = 'Isaac Whang'
+    PUBLISH_DEVELOPER_EMAIL = 'hjwhang@gmail.com'
+    PUBLISH_SCM_CONNECTION = 'scm:git:https://github.com/hjwhang/async-callback.git'
+    PUBLISH_SCM_DEVELOPER_CONNECTION = 'scm:git:https://github.com/hjwhang/async-callback.git'
+    PUBLISH_SCM_URL = 'https://github.com/hjwhang/async-callback/tree/main'
+}
+
+apply from: '${rootProject.projectDir}/scripts/publish-module.gradle'
 
 group 'io.github.hjwhang'
 version '0.0.1-SNAPSHOT'

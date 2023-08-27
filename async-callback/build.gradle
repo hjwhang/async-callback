@@ -2,6 +2,8 @@ plugins {
     id 'java'
 }
 
+apply from: 'publish-module.gradle'
+
 group 'io.github.hjwhang'
 version '0.0.1-SNAPSHOT'
 

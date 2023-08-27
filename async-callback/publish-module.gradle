@@ -1,0 +1,119 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+task sourcesJar(type: Jar) {
+    archiveClassifier.set("sources")
+}
+
+//task javadocJar(type: Jar) {
+//    archiveClassifier.set("javadoc")
+//}
+
+artifacts {
+    archives sourcesJar
+//    archives javadocJar
+}
+
+ext {
+    PUBLISH_GROUP_ID = 'io.github.hjwhang'
+    PUBLISH_VERSION = '0.0.1-SNAPSHOT'
+    PUBLISH_ARTIFACT_ID = 'async-callback'
+    PUBLISH_DESCRIPTION = 'SpringBoot Async Callback Library'
+    PUBLISH_URL = 'https://github.com/hjwhang/async-callback'
+    PUBLISH_LICENSE_NAME = 'Apache License 2.0'
+    PUBLISH_LICENSE_URL = 'https://www.apache.org/licenses/LICENSE-2.0'
+    PUBLISH_DEVELOPER_ID = 'hjwhang'
+    PUBLISH_DEVELOPER_NAME = 'Isaac Whang'
+    PUBLISH_DEVELOPER_EMAIL = 'hjwhang@gmail.com'
+    PUBLISH_SCM_CONNECTION = 'scm:git:https://github.com/hjwhang/async-callback.git'
+    PUBLISH_SCM_DEVELOPER_CONNECTION = 'scm:git:https://github.com/hjwhang/async-callback.git'
+    PUBLISH_SCM_URL = 'https://github.com/hjwhang/async-callback/tree/main'
+}
+
+group PUBLISH_GROUP_ID
+version PUBLISH_VERSION
+
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                // The coordinates of the library, being set from variables that
+                // we'll setup later
+                groupId PUBLISH_GROUP_ID
+                artifactId PUBLISH_ARTIFACT_ID
+                version PUBLISH_VERSION
+
+                // Two artifacts, the `aar` (or `jar`) and the sources
+//                if (project.plugins.findPlugin("com.android.library")) {
+//                    from components.release
+//                } else {
+//                    from components.java
+//                }
+
+//                artifact("$buildDir/libs/${project.getName()}-${version}.jar")
+
+                artifact sourcesJar
+//                artifacts javaDocJar
+
+                // Mostly self-explanatory metadata
+                pom {
+                    name = PUBLISH_ARTIFACT_ID
+                    description = 'Async callback for Spring Boot'
+                    url = PUBLISH_URL
+                    licenses {
+                        license {
+                            name = PUBLISH_LICENSE_NAME
+                            url = PUBLISH_LICENSE_URL
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = PUBLISH_DEVELOPER_ID
+                            name = PUBLISH_DEVELOPER_NAME
+                            email = PUBLISH_DEVELOPER_EMAIL
+//                            url = "https://github.com/hjwhang"
+                        }
+                    }
+
+                    // Version control info
+                    scm {
+                        connection = PUBLISH_SCM_CONNECTION
+                        developerConnection = PUBLISH_SCM_DEVELOPER_CONNECTION
+                        url = PUBLISH_SCM_URL
+                    }
+                    withXml {
+                        def dependenciesNode = asNode().appendNode('dependencies')
+
+                        project.configurations.implementation.allDependencies.each {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        }
+                    }
+                }
+            }
+        }
+//        repositories {
+//            maven {
+//                name = "sonatype"
+//                url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+//
+//                credentials {
+//                    username ossrhUsername
+//                    password ossrhPassword
+//                }
+//            }
+//        }
+    }
+}
+
+signing {
+    useInMemoryPgpKeys(
+            rootProject.ext["signing.keyId"],
+            rootProject.ext["signing.key"],
+            rootProject.ext["signing.password"]
+    )
+    sign publishing.publications
+}
